@@ -19,15 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Use Node 22.12.x (meets Vite's requirement and ships with npm 10)
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22.12.0'
           cache: 'npm'
-      - run: npm ci
+
+      # Optional: show versions in logs for sanity
+      - run: node -v && npm -v
+
+      # Clean install to avoid stale native bindings
+      - run: rm -rf node_modules package-lock.json && npm ci
+
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
