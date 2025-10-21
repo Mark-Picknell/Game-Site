@@ -1,56 +1,25 @@
-name: Deploy to GitHub Pages
+name: Regenerate lockfile (Node 22)
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
 jobs:
-  build:
+  regen-lockfile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # temp start
-      - name: Show lockfile summary
-        run: |
-          node -e "const l=require('./package-lock.json'); \
-          console.log('lockfileVersion:', l.lockfileVersion); \
-          console.log('vite:', l.packages?.['node_modules/vite']?.version); \
-          console.log('rollup:', l.packages?.['node_modules/rollup']?.version); \
-          console.log('typescript:', l.packages?.['node_modules/typescript']?.version)"
-      # temp end
-      
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: '22.12.0'
           cache: 'npm'
-
-      # Sanity Check: Show versions in logs
       - run: node -v && npm -v
-
-      # Clean install to avoid stale native bindings
-      - run: rm -rf node_modules package-lock.json && npm ci
-
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - run: rm -rf node_modules package-lock.json
+      - run: npm install
+      - name: Create PR with new lockfile
+        uses: peter-evans/create-pull-request@v6
         with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          commit-message: "chore: regenerate package-lock.json on Node 22.12"
+          title: "Regenerate lockfile on Node 22.12"
+          branch: chore/lockfile-node22
+          add-paths: |
+            package-lock.json
