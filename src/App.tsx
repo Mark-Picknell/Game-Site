@@ -107,7 +107,7 @@ function GradientBG({ palette }: { palette: (typeof PALETTES)[number] }) {
 
 function TopBar({ title, onBack, palette, setPalette, tokens }: any) {
   return (
-    <div className="fixed z-30 top-0 left-0 right-0 flex items-center justify-between px-4 py-3">
+	  <div className="fixed z-30 top-0 left-0 right-0 flex items-center justify-between px-4 py-3 backdrop-blur bg-white/40">
       <div className="flex items-center gap-2">
         {onBack && (
           <button
@@ -722,8 +722,10 @@ export default function App(){
               onBack={view!=='menu' ? ()=> setView('menu') : undefined}
               glow={0}
               palette={palette} setPalette={setPalette} tokens={state.tokens} />
-
-      {!audioReady && (
+	  
+	  <div aria-hidden className="w-full" style={{ height: 'calc(env(safe-area-inset-top, 0px) + 72px)' }} />
+      
+	  {!audioReady && (
         <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur flex items-center justify-center">
           <Card className="w-80 text-center">
             <div className="text-xl font-semibold mb-2">Enable Sound & Haptics</div>
@@ -734,7 +736,7 @@ export default function App(){
       )}
 
       {view==='menu' && (
-        <div className="pt-20 pb-10 px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+        <div className="pt-4 pb-20 px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
           {menuItems.map(m => (
             <Card key={m.key} className="cursor-pointer hover:scale-[1.01] transition" onClick={()=> setView(m.key)}>
               <div className="flex items-center justify-between">
@@ -766,7 +768,7 @@ export default function App(){
       )}
 
       {view==='store' && (
-        <div className="pt-20 pb-10 px-4 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="pt-4 pb-20 px-4 max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
           {PALETTES.map(p => (
             <Card key={p.key}>
               <div className="flex items-center justify-between">
@@ -789,7 +791,7 @@ export default function App(){
       )}
 
       {view==='about' && (
-        <div className="pt-20 pb-10 px-4 max-w-xl mx-auto">
+        <div className="pt-4 pb-20 px-4 max-w-xl mx-auto">
           <Card>
             <div className="text-lg font-semibold mb-2">About</div>
             <p className="text-slate-800">Seven minimalist, cozy‑tension mini‑games with soft audio & haptics. Earn ⭐ to unlock themes. No login; data stays on your device.</p>
@@ -798,14 +800,16 @@ export default function App(){
       )}
 
       {(['pulse','heat','tension','echo','pressure','ascend','heart'] as GameKey[]).includes(view as GameKey) && (
-        <div className="pt-12">
+        <div className="pt-6 pb=12">
           <GameFrame game={view as GameKey} onExit={onExit} award={award} />
         </div>
       )}
+	  
+	  <div aria-hidden className="w-full" style={{ height: 'calc(env(safe-area-inset-bottom, 0px) + 44px)' }} />
 
-      <footer className="fixed bottom-2 left-0 right-0 text-center text-[11px] text-slate-700/80">
-        Built for mobile · Haptics where supported · Your data lives in localStorage
-      </footer>
+      <footer className="fixed bottom-2 left-0 right-0 text-center text-[11px] text-slate-700/80 pointer-events-none">
+		Built for mobile · Haptics where supported · Your data lives in localStorage
+	  </footer>
     </div>
   );
 }
