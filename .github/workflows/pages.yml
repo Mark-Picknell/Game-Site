@@ -21,12 +21,12 @@ jobs:
       - uses: actions/checkout@v4
       # temp start
       - name: Show lockfile summary
-  run: |
-    node -e "const l=require('./package-lock.json'); \
-      console.log('lockfileVersion:', l.lockfileVersion); \
-      console.log('vite:', l.packages?.['node_modules/vite']?.version); \
-      console.log('rollup:', l.packages?.['node_modules/rollup']?.version); \
-      console.log('typescript:', l.packages?.['node_modules/typescript']?.version)"
+        run:
+          node -e "const l=require('./package-lock.json');
+          console.log('lockfileVersion:', l.lockfileVersion);
+          console.log('vite:', l.packages?.['node_modules/vite']?.version);
+          console.log('rollup:', l.packages?.['node_modules/rollup']?.version);
+          console.log('typescript:', l.packages?.['node_modules/typescript']?.version);
       # temp end
       
       - uses: actions/setup-node@v4
