@@ -1,25 +1,47 @@
-name: Regenerate lockfile (Node 22)
+name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  regen-lockfile:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22.12.0'
           cache: 'npm'
+
       - run: node -v && npm -v
-      - run: rm -rf node_modules package-lock.json
-      - run: npm install
-      - name: Create PR with new lockfile
-        uses: peter-evans/create-pull-request@v6
+
+      # IMPORTANT: keep package-lock.json in the repo; do not remove it
+      - run: npm ci
+
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          commit-message: "chore: regenerate package-lock.json on Node 22.12"
-          title: "Regenerate lockfile on Node 22.12"
-          branch: chore/lockfile-node22
-          add-paths: |
-            package-lock.json
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
