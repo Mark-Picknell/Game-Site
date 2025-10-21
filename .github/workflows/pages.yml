@@ -19,6 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # temp start
+      - name: Show lockfile summary
+  run: |
+    node -e "const l=require('./package-lock.json'); \
+      console.log('lockfileVersion:', l.lockfileVersion); \
+      console.log('vite:', l.packages?.['node_modules/vite']?.version); \
+      console.log('rollup:', l.packages?.['node_modules/rollup']?.version); \
+      console.log('typescript:', l.packages?.['node_modules/typescript']?.version)"
+      # temp end
+      
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
